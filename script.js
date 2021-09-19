@@ -26,52 +26,20 @@ SOFTWARE.
 
 // Mobile promo section
 
-const promoPopup = document.getElementsByClassName('promo')[0];
-const promoPopupClose = document.getElementsByClassName('promo-close')[0];
-
-if (isMobile()) {
-    setTimeout(() => {
-        promoPopup.style.display = 'table';
-    }, 20000);
-}
-
-promoPopupClose.addEventListener('click', e => {
-    promoPopup.style.display = 'none';
-});
-
-const appleLink = document.getElementById('apple_link');
-appleLink.addEventListener('click', e => {
-    ga('send', 'event', 'link promo', 'app');
-    window.open('https://apps.apple.com/us/app/fluid-simulation/id1443124993');
-});
-
-const googleLink = document.getElementById('google_link');
-googleLink.addEventListener('click', e => {
-    ga('send', 'event', 'link promo', 'app');
-    window.open('https://play.google.com/store/apps/details?id=games.paveldogreat.fluidsimfree');
-});
 
 // Simulation section
 
-const canvas = document.getElementsByTagName('canvas')[0];
+const canvas = document.getElementById('hsy-fluid-canvas');
 resizeCanvas();
 
 let config = {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 1024,
     CAPTURE_RESOLUTION: 512,
-    DENSITY_DISSIPATION: 1,
-    VELOCITY_DISSIPATION: 0.2,
-    PRESSURE: 0.8,
-    PRESSURE_ITERATIONS: 20,
-    CURL: 30,
-    SPLAT_RADIUS: 0.25,
-    SPLAT_FORCE: 6000,
     SHADING: true,
     COLORFUL: true,
     COLOR_UPDATE_SPEED: 10,
-    PAUSED: false,
-    BACK_COLOR: { r: 0, g: 0, b: 0 },
+    BACK_COLOR: { r: 12, g: 12, b: 48 },
     TRANSPARENT: false,
     BLOOM: true,
     BLOOM_ITERATIONS: 8,
@@ -82,6 +50,47 @@ let config = {
     SUNRAYS: true,
     SUNRAYS_RESOLUTION: 196,
     SUNRAYS_WEIGHT: 1.0,
+    // these are params that we will change every 6 secs
+    DENSITY_DISSIPATION: 0.8,
+    VELOCITY_DISSIPATION: 0.4,
+    PRESSURE: 0.1,
+    PRESSURE_ITERATIONS: 8,
+    CURL: 2,
+    SPLAT_RADIUS: 0.18,
+    SPLAT_FORCE: 12000,
+    // this toggle changes as someone clicks the icon
+    PAUSED: false,
+}
+
+function startParamDrift() {
+    let choices = ['dec', 'inc', 'const'];
+    let params = [
+        "DENSITY_DISSIPATION",
+        "VELOCITY_DISSIPATION",
+        "PRESSURE",
+        "PRESSURE_ITERATIONS",
+        "CURL",
+        "SPLAT_RADIUS",
+        "SPLAT_FORCE",];
+    for (let param of params) {
+        let choice = decideOneRandomChoice(choices);
+        switch(choice) {
+            case 'dec':
+                console.log(`dec before and after ${param} ${config[param]}`)
+                config[param] = config[param] / 2;
+                break;
+            case 'inc':
+                console.log(`inc before and after ${param} ${config[param]}`)
+                config[param] = config[param] * 2;
+                break;
+            case 'const':
+            default:
+        }
+    }
+}
+
+function decideOneRandomChoice(choices) {
+    return choices[Math.floor(Math.random() * choices.length)];
 }
 
 function pointerPrototype () {
@@ -1167,7 +1176,17 @@ function updateKeywords () {
 
 updateKeywords();
 initFramebuffers();
-multipleSplats(parseInt(Math.random() * 20) + 5);
+
+setTimeout(() => {
+    multipleSplats(12);
+}, 200);
+setTimeout(() => {
+    multipleSplats(8);
+}, 1600);
+
+setTimeout(() => {
+    setInterval(startParamDrift, 6000);
+}, 3000);
 
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;

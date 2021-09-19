@@ -87,6 +87,7 @@ function startParamDrift() {
             default:
         }
     }
+    multipleSplats(2);
 }
 
 function decideOneRandomChoice(choices) {

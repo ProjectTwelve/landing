@@ -2,7 +2,7 @@
 
 // Simulation section
 
-const canvas = document.getElementById('hsy-fluid-canvas');
+const canvas = document.getElementById('p12-fluid-canvas');
 resizeCanvas();
 
 let config = {
@@ -35,8 +35,11 @@ let config = {
     PAUSED: false,
 }
 
-const heresyicon = document.getElementById('hsy-icon');
-heresyicon.addEventListener('click', () => { config.PAUSED = !config.PAUSED; });
+const heresyicon = document.getElementById('p12-icon');
+heresyicon.addEventListener('click', () => {
+    config.PAUSED = !config.PAUSED;
+    canvas.style.opacity = 0;
+});
 
 function startParamDrift() {
     let choices = ['dec', 'inc', 'const'];
